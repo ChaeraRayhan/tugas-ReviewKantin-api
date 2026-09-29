@@ -6,6 +6,7 @@ import { menuItemRouter } from "./routes/menuItemRouter.ts";
 import { userRouter } from "./routes/userRouter.ts";
 import { reviewRouter } from "./routes/reviewRouter.ts";
 import { likeRouter } from "./routes/likeRouter.ts";
+import { flagRouter } from "./routes/flagRouter.ts";
 import { notFoundHandler } from "./middlewares/notFound.ts";
 import { errorHandler } from "./middlewares/errorHandler.ts";
 
@@ -28,6 +29,7 @@ app.use("/api/v1/menu-items", menuItemRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/likes", likeRouter);
+app.use("/api/v1/flags", flagRouter);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
