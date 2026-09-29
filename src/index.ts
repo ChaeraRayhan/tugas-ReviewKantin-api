@@ -1,21 +1,27 @@
 import express, { type Application } from "express";
 import { sql } from "drizzle-orm";
+import swaggerUi from "swagger-ui-express";
 import { getDb } from "./db/index.ts";
+import { userRouter } from "./routes/userRouter.ts";
 import { stallRouter } from "./routes/stallRouter.ts";
 import { menuItemRouter } from "./routes/menuItemRouter.ts";
-import { userRouter } from "./routes/userRouter.ts";
 import { reviewRouter } from "./routes/reviewRouter.ts";
 import { likeRouter } from "./routes/likeRouter.ts";
 import { flagRouter } from "./routes/flagRouter.ts";
 import { auditLogRouter } from "./routes/auditLogRouter.ts";
 import { notFoundHandler } from "./middlewares/notFound.ts";
 import { errorHandler } from "./middlewares/errorHandler.ts";
+import { openApiDocument } from "./docs/openapi.ts";
 
 const app: Application = express();
 const PORT: number = 3000;
 
 app.use(express.json());
 
+// Dokumentasi API OpenAPI 3.0 (dibangkitkan dari schema zod di memori).
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(openApiDocument));
+
+// Tanpa try/catch: Express 5 meneruskan handler async yang reject ke errorHandler.
 app.get("/health", async (_req, res) => {
   const db = await getDb();
   await db.execute(sql`SELECT 1 AS ok`);
@@ -24,14 +30,15 @@ app.get("/health", async (_req, res) => {
     .json({ status: "success", message: "Server dan database terhubung" });
 });
 
-app.use("/api/v1/stalls", stallRouter);
-
-app.use("/api/v1/menu-items", menuItemRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/stalls", stallRouter);
+app.use("/api/v1/menu-items", menuItemRouter);
 app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/likes", likeRouter);
 app.use("/api/v1/flags", flagRouter);
 app.use("/api/v1/audit-logs", auditLogRouter);
+
+// 404 untuk rute yang tidak dikenal, lalu error handling terpusat (paling akhir).
 app.use(notFoundHandler);
 app.use(errorHandler);
 
