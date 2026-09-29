@@ -3,6 +3,7 @@ import { sql } from "drizzle-orm";
 import { getDb } from "./db/index.ts";
 import { stallRouter } from "./routes/stallRouter.ts";
 import { menuItemRouter } from "./routes/menuItemRouter.ts";
+import { userRouter } from "./routes/userRouter.ts";
 import { notFoundHandler } from "./middlewares/notFound.ts";
 import { errorHandler } from "./middlewares/errorHandler.ts";
 
@@ -22,6 +23,7 @@ app.get("/health", async (_req, res) => {
 app.use("/api/v1/stalls", stallRouter);
 
 app.use("/api/v1/menu-items", menuItemRouter);
+app.use("/api/v1/users", userRouter);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
